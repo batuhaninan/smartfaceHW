@@ -34,3 +34,26 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> = Composit
   BottomTabScreenProps<RootTabParamList, Screen>,
   NativeStackScreenProps<RootStackParamList>
 >;
+
+
+export interface Homework  {
+  id: number, 
+  name: string,
+  studentCount: number,
+  totalAttempts: number,
+  isUploaded: boolean,
+  uploadedFileNames: string[],
+  currentAttempts: number,
+}
+
+export interface Teacher  {
+  id: number, 
+  name: string,
+  age: number,
+}
+
+export interface Course  {
+  courseName: string,
+  teacher: Teacher,
+  homeworks:  Homework[],
+}

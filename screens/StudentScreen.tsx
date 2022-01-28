@@ -1,58 +1,98 @@
 import { StyleSheet } from 'react-native';
 
 import { View } from '../components/Themed';
-import { RootTabScreenProps } from '../types';
+import { RootTabScreenProps, Course } from '../types';
 
 import { useState } from 'react';
 
-import DataTableWithPagination from "../components/DataTableWithPagination";
+import HomeworkList from "../components/HomeworkList";
 
 
-export default function StudentScreen({ navigation }: RootTabScreenProps<'StudentScreen'>) {
-  
-  const [teachers, setTeachers] = useState<{ id: number, name: string, studentCount: number }[]>(
-    [{
+var courses: Course[] = [{
+  "courseName": "Python",
+  "teacher": {
+    "id": 1,
+    "name": "Batuhan Inan",
+    "age": 23,
+  }, 
+  "homeworks": [
+    {
       "id": 1,
-      "name": "Batuhan Inan",
-      "studentCount": 159
-    },
+      "name": "Ödev 1",
+      "studentCount": 159,
+      "totalAttempts": 5,
+      "currentAttempts": 1,
+      "isUploaded": false,
+      "uploadedFileNames": [],
+    }
+  ]
+},
+{
+  "courseName":"C++",
+  "teacher": {
+    "id": 1,
+    "name": "Atilla Başaran",
+    "age": 24,
+  },
+  "homeworks": [
     {
       "id": 2,
-      "name": "Atilla Başaran",
-      "studentCount": 120
+      "name": "Ödev 1",
+      "studentCount": 120,
+      "totalAttempts": 5,
+      "currentAttempts": 1,
+      "isUploaded": false,
+      "uploadedFileNames": [],
     },
     {
       "id": 3,
-      "name": "Emre Şallı",
-      "studentCount": 30
-    },
+      "name": "Ödev 2",
+      "studentCount": 30,
+      "totalAttempts": 5,
+      "currentAttempts": 1,
+      "isUploaded": false,
+      "uploadedFileNames": [],
+    }
+  ]
+},
+{
+  "courseName":"C",
+  "teacher": {
+    "id": 1,
+    "name": "Emre Şallı",
+    "age": 25,
+  },
+  "homeworks": [
     {
       "id": 4,
-      "name": "4 numaralı teacher",
-      "studentCount": 40
+      "name": "Ödev 1",
+      "studentCount": 40,
+      "totalAttempts": 5,
+      "currentAttempts": 1,
+      "isUploaded": false,
+      "uploadedFileNames": [],
     },
     {
       "id": 5,
-      "name": "5 numaralı teacher",
-      "studentCount": 50
+      "name": "Ödev 2",
+      "studentCount": 50,
+      "totalAttempts": 5,
+      "currentAttempts": 1,
+      "isUploaded": false,
+      "uploadedFileNames": [],
     }
-    ]
-  )
+  ]},
+]
 
-  const extendTeacherInfos = (teacherID: number) => {
-    const teacherName = teachers.find((teacher) => teacher.id == teacherID)?.name;
-    console.log("Show info of teacher of id ", teacherID, ", which is ", teacherName)
-  }
+export default function StudentScreen({ navigation }: RootTabScreenProps<'StudentScreen'>) {
 
-  const dataTableHeaders: string[] = ["Teacher ID", "Teacher Name", "Student Count"]; 
+
 
   return (
     <View style={styles.container}>
 
-      <DataTableWithPagination 
-        data={teachers}
-        dataTableHeaders={dataTableHeaders}
-        optionsPerPage={3}
+      <HomeworkList 
+        courses={courses}
       />
 
     </View>
@@ -62,8 +102,5 @@ export default function StudentScreen({ navigation }: RootTabScreenProps<'Studen
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
   },
 });
