@@ -5,10 +5,12 @@ import { useState } from 'react';
 
 import { Text, View } from '../components/Themed';
 
+import HomeworkList from "../components/HomeworkList"
+
 import { Surface, List } from 'react-native-paper';
 
 
-import { Course } from '../types';
+import { Course, UploadedHomeworksByCourse } from '../types';
 
 
 var data: Course[] = [
@@ -70,37 +72,33 @@ var data: Course[] = [
   },
 ]
 
-const hws = [
+const hws: UploadedHomeworksByCourse[] = [
   {
     "courseName": "Python",
-    "homeworks": [
+    "students": [
       {
         "studentName": "Batuhan Inan",
-        "uploaded_homeworks": [
+        "uploadedHomeworks": [
           {
-            "Ödev 1": {
-              "file": "dummy.png"
-            }
+            "homeworkTitle": "Ödev 1",
+            "file": "dummy.png"
           },
           {
-            "Ödev 2": {
-              "file": "ödev_2.png"
-            }
+            "homeworkTitle": "Ödev 2",
+            "file": "dummy.png"
           },
         ]
       },
       {
         "studentName": "Atilla Başaran",
-        "uploaded_homeworks": [
+        "uploadedHomeworks": [
           {
-            "Ödev 1": {
-              "file": "ödev_1.png"
-            }
+            "homeworkTitle": "Ödev 1",
+            "file": "dummy.png"
           },
           {
-            "Ödev 2": {
-              "file": "EMPTY"
-            }
+            "homeworkTitle": "Ödev 2",
+            "file": "dummy.png"
           },
         ]
       }
@@ -108,34 +106,30 @@ const hws = [
   },
   {
     "courseName": "C++",
-    "homeworks": [
+    "students": [
       {
         "studentName": "Batuhan Inan",
-        "uploaded_homeworks": [
+        "uploadedHomeworks": [
           {
-            "Ödev 1": {
-              "file": "dummy.png"
-            }
+            "homeworkTitle": "Ödev 1",
+            "file": "dummy.png"
           },
           {
-            "Ödev 2": {
-              "file": "ödev_2.png"
-            }
+            "homeworkTitle": "Ödev 2",
+            "file": "dummy.png"
           },
         ]
       },
       {
         "studentName": "Atilla Başaran",
-        "uploaded_homeworks": [
+        "uploadedHomeworks": [
           {
-            "Ödev 1": {
-              "file": "ödev_1.png"
-            }
+            "homeworkTitle": "Ödev 1",
+            "file": "dummy.png"
           },
           {
-            "Ödev 2": {
-              "file": "EMPTY"
-            }
+            "homeworkTitle": "Ödev 2",
+            "file": "dummy.png"
           },
         ]
       }
@@ -156,9 +150,10 @@ export default function TeacherScreen() {
       <Text>Then expand on the homework and see all students uploaded files</Text>
       
 
-      <List.Section title="Courses" >
-    
-        {hws.map((course) => {
+        <HomeworkList 
+          courses={hws}
+        />
+        {/* {hws.map((course) => {
           return (
             <List.Accordion title={course.courseName}>
               {
@@ -172,8 +167,7 @@ export default function TeacherScreen() {
               }
             </List.Accordion>
           )
-        })}
-      </List.Section>
+        })} */}
     </View>
   );
 }

@@ -10,6 +10,9 @@ npm-debug.*
 *.orig.*
 web-build/
 
+google-services.json
+firebase.ts
+.idea/
 # macOS
 .DS_Store
 .vscode/

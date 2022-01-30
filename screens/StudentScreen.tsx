@@ -1,14 +1,19 @@
 import { StyleSheet } from 'react-native';
 
 import { View } from '../components/Themed';
-import { RootTabScreenProps, Course } from '../types';
+import { RootTabScreenProps, CourseData } from '../types';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-import HomeworkList from "../components/HomeworkList";
+import { query, collection, getFirestore, where, getDocs, getDoc, CollectionReference  } from 'firebase/firestore';
 
+import { Teacher, TeacherConverter } from '../models/Teacher';
+import { Homework, HomeworkConverter } from '../models/Homework';
+import { Course, CourseConverter } from '../models/Course';
 
-var courses: Course[] = [{
+import CourseList from "../components/CourseList";
+
+/*var courses: Course[] = [{
   "courseName": "Python",
   "teacher": {
     "id": 1,
@@ -82,25 +87,83 @@ var courses: Course[] = [{
       "uploadedFileNames": [],
     }
   ]},
-]
+]*/
 
 export default function StudentScreen({ navigation }: RootTabScreenProps<'StudentScreen'>) {
 
+	const [courses, setCourses] = useState<CourseData[]>([]);
 
+	const getTeacherByCourseID = async (collection: CollectionReference, id: string) => {
+		const teacher = await getDocs(query(collection, where("courses", "array-contains", `/Course/${id}`)).withConverter(TeacherConverter));
 
-  return (
-    <View style={styles.container}>
+		if (!teacher.empty) {
+			return teacher.docs[0].data();
+		}
+	}
 
-      <HomeworkList 
+	const getHomeworksByCourseID = async (collection: CollectionReference, id: string) => {
+		const temp: Homework[] = [];
+
+		const homeworks = await getDocs(query(collection, where("course", "==", `/Course/${id}`)).withConverter(HomeworkConverter));
+
+		if (!homeworks.empty) {
+			homeworks.forEach((hw) => {
+				temp.push(hw.data())
+			})
+		}
+
+		return temp;
+	}
+
+	const getData = async () => {
+		const data: CourseData[] = [];
+
+		const db = getFirestore();
+
+		const courseColl = collection(db, "Course").withConverter(CourseConverter);
+		const teacherColl = collection(db, "Teacher").withConverter(TeacherConverter);
+		const homeworkColl = collection(db, "Homework").withConverter(HomeworkConverter);
+
+		const courses = await getDocs(query(courseColl));
+
+		await Promise.all(courses.docs.map(async (course) => {
+			if (course.exists()) {
+				let current_course = course.data();
+
+				let current_teacher = await getTeacherByCourseID(teacherColl, course.id);
+				let current_homeworks = await getHomeworksByCourseID(homeworkColl, course.id);
+
+				// @ts-ignore
+				data.push({
+					"courseSnapshot": course,
+					"course": current_course,
+					"teacher": current_teacher,
+					"homeworks": current_homeworks,
+				});
+			}
+		}))
+
+		console.log("\n\nDone getting data!")
+		return data;
+	}
+
+	useEffect(() => {
+		getData().then(r => { setCourses(r) })
+	}, [])
+
+	return (
+		<View style={styles.container}>
+
+			<CourseList
         courses={courses}
       />
 
-    </View>
-  );
+		</View>
+	);
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+	container: {
+		flex: 1,
+	},
 });

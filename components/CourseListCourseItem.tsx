@@ -1,0 +1,59 @@
+import { StyleSheet } from 'react-native';
+
+import { List, Surface } from 'react-native-paper';
+import React, { useState } from 'react';
+
+import CourseListCourseItemDialog from "./CourseListCourseItemDialog";
+import {Course} from "../models/Course";
+import {Homework} from "../models/Homework";
+import {Teacher} from "../models/Teacher";
+
+
+interface CourseListCourseItemProps {
+    course: Course
+		teacher: Teacher
+		homeworks: Homework[]
+
+}
+
+const CourseListCourseItem: React.FC<CourseListCourseItemProps> = ({ course, teacher, homeworks }): JSX.Element => {
+	
+	
+	const [expanded, setExpanded] = useState(false);
+	const [shouldOpenDialog, setShouldOpenDialog] = useState(false);
+	const [selectedHomework, setSelectedHomework] = useState<Homework>();
+
+	const handlePress = () => setExpanded(!expanded);
+
+	const extendRowInfo = (index: number) => {
+        if (homeworks !== undefined) {
+            setSelectedHomework(homeworks[index]);
+            setShouldOpenDialog(true);
+        }
+	}
+    return (
+        <Surface>
+            {shouldOpenDialog &&
+                <CourseListCourseItemDialog homework={selectedHomework} closeDialog={setShouldOpenDialog} course={course} teacher={teacher} />}
+
+            <List.Accordion
+                title={course.name}
+                description={"Teacher: " + teacher.name}
+                left={_props => <List.Icon {..._props} icon="folder" />}
+                expanded={expanded}
+                onPress={handlePress}>
+
+                {homeworks.map((homework: Homework, index: number) => {
+                    return (
+                        <List.Item descriptionNumberOfLines={2} key={homework.title + homework.status + homework.course} title={homework.title + `\n\n${homework.currentAttempts}/${homework.totalAttempts}`} onPress={() => {extendRowInfo(index)}} />
+                    )
+                })}
+            </List.Accordion>
+        </Surface>
+    );
+}
+
+const styles = StyleSheet.create({
+});
+
+export default CourseListCourseItem;

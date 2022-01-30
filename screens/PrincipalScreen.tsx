@@ -3,7 +3,15 @@ import { StyleSheet } from 'react-native';
 import { Text, View } from '../components/Themed';
 import { RootTabScreenProps } from '../types';
 
+
+
+
 export default function PrincipalScreen({ navigation }: RootTabScreenProps<'PrincipalScreen'>) {
+
+
+  
+
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Principal Screen</Text>
