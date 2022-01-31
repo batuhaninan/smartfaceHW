@@ -5,9 +5,6 @@ import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
 
-import { initializeApp } from 'firebase/app';
-import * as auth from "firebase/auth"
-
 import { LogBox } from "react-native";
 
 export default function App() {
@@ -16,8 +13,6 @@ export default function App() {
 
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
-
-
 
   if (!isLoadingComplete) {
     return null;
