@@ -8,6 +8,8 @@ import {Course} from "../models/Course";
 import {Homework} from "../models/Homework";
 import {Teacher} from "../models/Teacher";
 
+import { StatusEnum } from "../constants/StatusToColor";
+import {convertStatusToEnum, statusToIcon, statusToColor} from "../utils/HomeworkStatusUtils";
 
 interface CourseListCourseItemProps {
     course: Course
@@ -44,8 +46,8 @@ const CourseListCourseItem: React.FC<CourseListCourseItemProps> = ({ course, tea
                 onPress={handlePress}>
 
                 {homeworks.map((homework: Homework, index: number) => {
-                    return (
-                        <List.Item descriptionNumberOfLines={2} key={homework.title + homework.status + homework.course} title={homework.title + `\n\n${homework.currentAttempts}/${homework.totalAttempts}`} onPress={() => {extendRowInfo(index)}} />
+									return (
+                        <List.Item style={{ backgroundColor: statusToColor(convertStatusToEnum(homework.status)) }} right={_props => <List.Icon {..._props} icon={ statusToIcon(convertStatusToEnum(homework.status)) } />} descriptionNumberOfLines={2} key={homework.title + homework.status + homework.course} title={homework.title} onPress={() => {extendRowInfo(index)}} />
                     )
                 })}
             </List.Accordion>

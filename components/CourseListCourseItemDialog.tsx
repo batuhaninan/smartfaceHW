@@ -1,22 +1,24 @@
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
 
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 
-
-import { Dialog, List, Surface, Paragraph, Portal, Button } from 'react-native-paper';
+import {Button, Dialog, List, Paragraph, Portal, Surface} from 'react-native-paper';
 
 import * as DocumentPicker from 'expo-document-picker';
-import * as FileSystem from "expo-file-system";
 import {Homework} from "../models/Homework";
-import { getStorage, ref, uploadBytes, getDownloadURL, listAll } from "firebase/storage";
 import {Course} from "../models/Course";
 import {Teacher} from "../models/Teacher";
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-
-import auth from "../firebase"
-
+import {
+  getFirebaseStorageUrlFromObjects,
+  getUploadedFiles,
+  selectFile,
+  uploadFile
+} from "../utils/FirebaseStorageUtils";
+import moment from "moment";
+import {dateFormat} from "../constants/Date";
+import {convertStatusToEnum} from "../utils/HomeworkStatusUtils";
+import {StatusEnum} from "../constants/StatusToColor";
 
 
 interface CourseListCourseItemDialogProps {
@@ -29,93 +31,55 @@ interface CourseListCourseItemDialogProps {
 
 const CourseListCourseItemDialog: React.FC<CourseListCourseItemDialogProps> = ({ homework, course, teacher, closeDialog }): JSX.Element => {
 	
-    const [didSelect, setDidSelect] = useState<boolean>(false);
-    const [uploadedFiles, setUploadedFiles] = useState([]);
-    const [selectedFile, setSelectedFile] = useState<DocumentPicker.DocumentResult[]>([]);
+    const [currentAttempts, setCurrentAttempts] = useState(0);
+    const [uploadedFiles, setUploadedFiles] = useState<{ name: string, date: string }[]>([]);
+    const [selectedFile, setSelectedFile] = useState<DocumentPicker.DocumentResult>();
 
     const hideDialog = () => closeDialog(false);
 
-    const getUploadedFiles = async () => {
-        const storage = getStorage();
+    const selectFileWrapper = async () => {
+        const file = await selectFile()
 
-        // gs://smartfacehomeworkapp.appspot.com/Python/Batuhan Inan/Ödev 1/homeworks/
-
-        const files: string[] = [];
-
-        const gsRef = ref(storage, `gs://smartfacehomeworkapp.appspot.com/${course.name}/${teacher.name}/${homework.title}/homeworks/${auth.auth.currentUser?.email}`);
-
-        console.log("Trying to download file")
-
-        const bucketList = await listAll(gsRef)
-
-        await Promise.all(bucketList.prefixes.map(async (folderRef) => {
-            const bucketFolder = await listAll(folderRef)
-            await Promise.all(bucketFolder.items.map((item) => {
-                files.push(item.name)
-                console.log(folderRef.fullPath + "/" + item.name)
-            }))
-        }))
-
-        // setUploadedFiles(files)
-        homework.currentAttempts = files.length;
-    }
-    
-    const uploadFile = () => {
-        selectedFile.map(async (file) => {
-            if (file.type !== "cancel") {
-                const storage = getStorage();
-
-                const uri = FileSystem.documentDirectory + file.name;
-
-                await FileSystem.copyAsync({
-                    from: file.uri,
-                    to: uri
-                })
-
-                const fetchResponse = await fetch(uri);
-                const blob = await fetchResponse.blob();
-
-                let storageRef = ref(storage, `${course.name}/${teacher.name}/${homework.title}/homeworks/${auth.auth.currentUser?.email}/${new Date().toLocaleString("tr-TR")}/${file.name}`);
-
-
-                uploadBytes(storageRef, blob).then((snapshot) => {
-                    console.log(`Upload ${file.name} to ${storageRef.toString()}`)
-                })
-                // homework.uploadedFileNames.push(file.name);
-            }
-        })
-        
-        // homework.isUploaded = true;
-        // homework.currentAttempts += 1;
-
-        // setSelectedFiles([]);
-        // setDidSelect(false);
+        setSelectedFile(file)
     }
 
-    const selectFile = () => {
-        DocumentPicker.getDocumentAsync({
-            copyToCacheDirectory: false,
-            multiple: true
-        })
-        .then((file) => {
-            if (file.type === "success") {
-                setSelectedFile([file]);
-                setDidSelect(true);
-                return;
-            }
-        })
+    const uploadFileWrapper = async () => {
+        let url = getFirebaseStorageUrlFromObjects(course, teacher, homework)
+        url = `${url}/${moment().format(dateFormat)}/${selectedFile?.name}`;
+        console.log("upload file wrapper ", url)
+        uploadFile(selectedFile, url)
+          .then((r) => {
+              setTimeout(() => {
+                  getUploadedFiles(course, teacher, homework)
+                    .then((uploadFiles) => {
+                        setUploadedFiles(uploadFiles);
+                        setCurrentAttempts(uploadFiles.length)
+                        setSelectedFile(undefined)
+                    })
+              }, 1000)
+          })
     }
 
     const isOutOfAttempts = () => {
-        return homework.currentAttempts >= homework.totalAttempts
+        return currentAttempts >= homework.totalAttempts
     }
 
     useEffect(() => {
-    }, [homework, homework.currentAttempts])
+    }, [homework, uploadedFiles])
 
-    getUploadedFiles()
+    useEffect(() => {
+        getUploadedFiles(course, teacher, homework)
+          .then((files) => {
+              setUploadedFiles(files)
+              setCurrentAttempts(files.length)
+          })
+    }, []);
 
-    return (
+    const isHomeworkDone = () => {
+      return convertStatusToEnum(homework.status) === StatusEnum.DONE;
+  }
+
+  return (
         <Surface>
             <Portal>
                 <Dialog visible={true} onDismiss={hideDialog}>
@@ -126,15 +90,15 @@ const CourseListCourseItemDialog: React.FC<CourseListCourseItemDialogProps> = ({
 
                         {isOutOfAttempts() ?
                             <Paragraph style={styles.selectParagraph}>No attempts left! (Total {homework.totalAttempts})</Paragraph> :
-                            <Paragraph style={styles.selectParagraph}>Attempt {homework.currentAttempts} of {homework.totalAttempts}</Paragraph>
+                            <Paragraph style={styles.selectParagraph}>Attempt {currentAttempts} of {homework.totalAttempts}</Paragraph>
                         }
 
-                        {(homework.isUploaded) && 
+                        {
                             <Surface>
                                 <Paragraph>You've uploaded file(s): </Paragraph>
-                                {homework.uploadedFiles.map((fileName) => {
+                                {uploadedFiles.map((file) => {
                                     return (
-                                        <Paragraph key={fileName} >{fileName}</Paragraph>
+                                        <Paragraph key={file.date} >{moment(file.date, dateFormat).fromNow()} - {file.name}</Paragraph>
                                     )
                                 })}
                             </Surface>
@@ -142,26 +106,21 @@ const CourseListCourseItemDialog: React.FC<CourseListCourseItemDialogProps> = ({
 
                         <Paragraph style={styles.selectParagraph} />
 
-                        {didSelect && 
+                        {selectedFile &&
                             <List.Accordion
                                 title="Selected File"
                                 expanded={true}
-                                left={props => <List.Icon {...props} icon="file" />}
-                                style={styles.selectedFileDiv}>
-                                
-                                {selectedFile.map((file) => {
-                                    return (
-                                        <List.Item key={file.uri} title={file.name} />
-                                    )
-                                })}
+                                left={props => <List.Icon {...props} icon="file" />}>
+
+                                <List.Item key={selectedFile?.uri} title={selectedFile?.name} />
                             </List.Accordion>
                         }
 
                     </Dialog.Content>
 
                     <Dialog.Actions>
-                            <Button onPress={selectFile} disabled={isOutOfAttempts()} style={ {paddingTop: 30, paddingBottom: 10} }>SELECT FILE</Button>
-                            <Button onPress={uploadFile} disabled={isOutOfAttempts()} style={ {paddingTop: 30, paddingBottom: 10, paddingLeft: 20} }>UPLOAD</Button>
+                            <Button onPress={selectFileWrapper} disabled={isOutOfAttempts() || isHomeworkDone()} style={ {paddingTop: 30, paddingBottom: 10} }>SELECT FILE</Button>
+                            <Button onPress={uploadFileWrapper} disabled={isOutOfAttempts() || !selectedFile || isHomeworkDone()} style={ {paddingTop: 30, paddingBottom: 10, paddingLeft: 20} }>UPLOAD</Button>
                     </Dialog.Actions>
                 </Dialog>
             </Portal>
