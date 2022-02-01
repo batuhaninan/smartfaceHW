@@ -1,15 +1,69 @@
 import {getStorage, listAll, ref, uploadBytes} from "firebase/storage";
-import auth from "../firebase";
 import {Course, CourseConverter} from "../models/Course";
 import {Teacher, TeacherConverter} from "../models/Teacher";
 import {Homework, HomeworkConverter} from "../models/Homework";
 import {CourseData} from "../types";
-import {collection, CollectionReference, getDocs, getFirestore, query, where} from "firebase/firestore";
+import {collection, CollectionReference, getDocs, getFirestore, query, where, addDoc} from "firebase/firestore";
 import * as FileSystem from "expo-file-system";
 import * as DocumentPicker from "expo-document-picker";
 import {dateFormat} from "../constants/Date";
 import moment from "moment";
+import TeacherScreen from "../screens/TeacherScreen";
+import PrincipalScreen from "../screens/PrincipalScreen";
+import StudentScreen from "../screens/StudentScreen";
 
+import { app } from "../firebase"
+import { getAuth } from "firebase/auth";
+
+const UserTypeToScreen: any = {
+	"Teacher": "TeacherScreen",
+	"Principal": "PrincipalScreen",
+	"Student": "StudentScreen",
+}
+
+
+export const addUser = async (userType: string) => {
+	const auth = getAuth(app);
+	const user = auth.currentUser;
+
+	const db = getFirestore();
+
+	const userRef = collection(db, "User");
+
+	addDoc(userRef, {
+		email: user?.email,
+		type: userType
+	})
+		.then(() => {
+			console.log("User added");
+		})
+		.catch(error => {
+			console.log(error);
+		});
+}
+
+export const determineUserScreenByType = async () => {
+	const auth = getAuth(app);
+	const user = auth.currentUser;
+
+	const db = getFirestore();
+
+	const userRef = collection(db, "User");
+
+	const q = query(userRef, where("email", "==", user?.email))
+	const userDoc = await getDocs(q);
+	console.log(userDoc);
+	if (userDoc.empty) {
+		return undefined;
+	}
+	const userType = userDoc.docs[0].get("type")
+
+	console.log("User type: ", userType);
+	if (["Teacher", "Student", "Principal"].includes(userType)) {
+		return UserTypeToScreen[userType];
+	}
+	return undefined;
+}
 
 const getTeacherByCourseID = async (collection: CollectionReference, id: string) => {
 	const teacher = await getDocs(query(collection, where("courses", "array-contains", `/Course/${id}`)).withConverter(TeacherConverter));
@@ -114,7 +168,8 @@ export const uploadFile = async (file: any, url: string) => {
 }
 
 export const getFirebaseStorageUrlFromObjects = (course: Course, teacher: Teacher, homework: Homework) => {
-	return `${course.name}/${teacher.name}/${homework.title}/homeworks/${auth.auth.currentUser?.email}`
+	const auth = getAuth(app);
+	return `${course.name}/${teacher.name}/${homework.title}/homeworks/${auth.currentUser?.email}`
 }
 
 export const getData = async () => {
