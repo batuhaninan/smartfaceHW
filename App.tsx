@@ -9,7 +9,7 @@ import { LogBox } from "react-native";
 
 export default function App() {
 
-  LogBox.ignoreLogs(["Setting a timer"]);
+  LogBox.ignoreLogs(["Setting a timer", ".*(AsyncStorage).*"]);
 
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
