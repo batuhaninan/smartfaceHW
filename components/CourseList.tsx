@@ -3,7 +3,6 @@ import { List } from 'react-native-paper';
 import CourseListCourseItem from "./CourseListCourseItem";
 
 import React from "react";
-import {Course} from "../models/Course";
 
 import {CourseData} from "../types";
 
