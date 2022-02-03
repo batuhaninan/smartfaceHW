@@ -13,6 +13,16 @@ declare global {
   }
 }
 
+export type DocumentResultFixed = {
+  name: string;
+  size?: number;
+  uri: string;
+  mimeType?: string;
+  lastModified?: number;
+  file?: File;
+  output?: FileList | null;
+}
+
 export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
   Modal: undefined;
