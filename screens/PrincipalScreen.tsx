@@ -1,32 +1,34 @@
-import { StyleSheet } from 'react-native';
-
-import { Text, View } from '../components/Themed';
-import {CourseData, RootTabScreenProps} from '../types';
+import { View } from '../components/Themed';
+import {CourseData} from '../types';
 import CourseList from "../components/CourseList";
 import {useEffect, useState} from "react";
-import {getData} from "../utils/FirebaseStorageUtils";
+import {getAllCoursesAndAllHomeworks, } from "../utils/FirebaseStorageUtils";
 import {styles} from "../Styles";
+import {ActivityIndicator} from "react-native-paper";
 
 
-
-
-export default function PrincipalScreen({ navigation }: RootTabScreenProps<'PrincipalScreen'>) {
-
+// @ts-ignore
+export default function PrincipalScreen({ navigation }) {
 
   const [courses, setCourses] = useState<CourseData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    getData().then(r => { setCourses(r) })
+    setIsLoading(true);
+    getAllCoursesAndAllHomeworks(setCourses)
+      .then((_) => {
+        setIsLoading(false);
+      })
   }, [])
 
 
   return (
     <View style={styles.container}>
-
       <CourseList
         courses={courses}
       />
-
+      {isLoading &&
+        <ActivityIndicator animating={true} color="purple" size="large" />}
     </View>
   );
 }

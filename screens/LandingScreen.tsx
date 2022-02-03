@@ -47,15 +47,14 @@ export default function LandingScreen({ navigation }) {
 		// 	.then(() => {
 		// 		navigation.navigate("StudentScreen");
 		// 	})
-		// signInWithEmailAndPassword(getAuth(app), "teacher_2@gmail.com", "123456")
-		// 	.then(() => {
-		// 		navigation.navigate("TeacherScreen");
-		// 	})
+		signInWithEmailAndPassword(getAuth(app), "teacher_2@gmail.com", "123456")
+			.then(() => {
+				navigation.navigate("TeacherScreen");
+			})
 		// signInWithEmailAndPassword(getAuth(app), "principal@gmail.com", "123456")
 		// 	.then(() => {
 		// 		navigation.navigate("PrincipalScreen");
 		// 	})
-		// return;
 		const isCorrectUserType = await validateUserTypeByEmail(emailText, role);
 		if (!isCorrectUserType) {
 			setFailedLoginText(`You are not a ${role}!`);
