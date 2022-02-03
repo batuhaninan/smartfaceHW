@@ -307,3 +307,14 @@ export const getAllCoursesAndHomeworksOfTeacher = async () => {
 
 	return data;
 }
+
+export const validateUserTypeByEmail = async (email: string, type: string) => {
+	const db = getFirestore();
+	const userCollection = collection(db, type);
+
+	const user = await getDocs(query(userCollection, where("email", "==", email)));
+
+	console.log(user.empty)
+
+	return !user.empty;
+}

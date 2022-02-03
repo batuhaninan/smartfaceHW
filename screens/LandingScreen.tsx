@@ -8,6 +8,7 @@ import SignupScreen from "./SignupScreen";
 import {app} from "../firebase";
 import DropDown from "react-native-paper-dropdown";
 import {LinearGradient} from "expo-linear-gradient";
+import {validateUserTypeByEmail} from "../utils/FirebaseStorageUtils";
 
 
 const roleList = [
@@ -33,6 +34,7 @@ export default function LandingScreen({ navigation }) {
 	const [shouldShowPassword, setShouldShowPassword] = useState(false);
 
 	const [loginSuccessful, setLoginSuccessful] = useState(false);
+	const [failedLoginText, setFailedLoginText] = useState("");
 
 	const [snackbarVisible, setSnackbarVisible] = useState(false);
 	const onDismissSnackbar = () => setSnackbarVisible(false);
@@ -40,7 +42,7 @@ export default function LandingScreen({ navigation }) {
 	const [showDropDown, setShowDropDown] = useState(false);
 	const [role, setRole] = useState("");
 
-	const loginWrapper = (_: SyntheticEvent) => {
+	const loginWrapper = async (_: SyntheticEvent) => {
 		// signInWithEmailAndPassword(getAuth(app), "student_2@gmail.com", "123456")
 		// 	.then(() => {
 		// 		navigation.navigate("StudentScreen");
@@ -54,15 +56,20 @@ export default function LandingScreen({ navigation }) {
 		// 		navigation.navigate("PrincipalScreen");
 		// 	})
 		// return;
-		const auth = getAuth(app);
-		signInWithEmailAndPassword(auth, emailText, passwordText)
+		const isCorrectUserType = await validateUserTypeByEmail(emailText, role);
+		if (!isCorrectUserType) {
+			setFailedLoginText(`You are not a ${role}!`);
+			setLoginSuccessful(false);
+			setSnackbarVisible(true);
+			return;
+		}
+		signInWithEmailAndPassword(getAuth(app), emailText, passwordText)
 			.then(async (_) => {
 				setLoginSuccessful(true);
 				navigation.navigate(`${role}Screen`);
-				setSnackbarVisible(true);
 			})
 			.catch((e) => {
-				console.log(e)
+				setFailedLoginText("Please check your information!");
 				setLoginSuccessful(false);
 				setSnackbarVisible(true);
 			});
@@ -141,7 +148,7 @@ export default function LandingScreen({ navigation }) {
 						onDismissSnackbar();
 					},
 				}}>
-				{loginSuccessful ? "Log in Successful" : "Please check your information!"}
+				{loginSuccessful ? "Log in Successful" : failedLoginText}
 			</Snackbar>
 		</View>
 	);
