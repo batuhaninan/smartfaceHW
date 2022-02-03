@@ -187,7 +187,7 @@ export const getFirebaseStorageUrlFromObjects = (course: Course, teacher: Teache
 	}
 }
 
-export const getData = async () => {
+export const getAllCoursesAndAllHomeworks = async (callback: Function) => {
 	const data: CourseData[] = [];
 
 	const db = getFirestore();
@@ -220,10 +220,10 @@ export const getData = async () => {
 		}
 	}))
 
-	return data;
+	callback(data);
 }
 
-export const getAllCoursesAndHomeworksOfStudent = async () => {
+export const getAllCoursesAndHomeworksOfStudent = async (callback: Function) => {
 	const auth = getAuth(app);
 	const user = auth?.currentUser;
 
@@ -259,10 +259,10 @@ export const getAllCoursesAndHomeworksOfStudent = async () => {
 		}))
 	}))
 
-	return data;
+	callback(data);
 }
 
-export const getAllCoursesAndHomeworksOfTeacher = async () => {
+export const getAllCoursesAndHomeworksOfTeacher = async (callback: Function) => {
 	const auth = getAuth(app);
 	const user = auth?.currentUser;
 
@@ -305,7 +305,7 @@ export const getAllCoursesAndHomeworksOfTeacher = async () => {
 		}))
 	}))
 
-	return data;
+	callback(data);
 }
 
 export const validateUserTypeByEmail = async (email: string, type: string) => {
