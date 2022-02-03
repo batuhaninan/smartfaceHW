@@ -2,14 +2,11 @@ import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { ColorSchemeName } from 'react-native';
-
 import { Provider as PaperProvider } from "react-native-paper";
-
 import NotFoundScreen from '../screens/NotFoundScreen';
 import StudentScreen from '../screens/StudentScreen';
 import TeacherScreen from '../screens/TeacherScreen';
 import PrincipalScreen from '../screens/PrincipalScreen';
-import LinkingConfiguration from './LinkingConfiguration';
 import LandingScreen from "../screens/LandingScreen";
 import SignupScreen from "../screens/SignupScreen";
 
@@ -17,7 +14,6 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
   return (
     <PaperProvider>
       <NavigationContainer
-        linking={LinkingConfiguration}
         theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <RootNavigator />
       </NavigationContainer>
