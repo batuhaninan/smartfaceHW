@@ -2,18 +2,16 @@ import {getStorage, listAll, list, ref, uploadBytes, getDownloadURL} from "fireb
 import {Course, CourseConverter} from "../models/Course";
 import {Teacher, TeacherConverter} from "../models/Teacher";
 import {Homework, HomeworkConverter} from "../models/Homework";
-import {CourseData} from "../types";
+import {CourseData, HomeworkAndUploadedFiles, TeacherCourseData, UploadedFileByStudent} from "../types";
 import {collection, CollectionReference, getDocs, doc, getDoc, getFirestore, query, where, addDoc} from "firebase/firestore";
 import * as FileSystem from "expo-file-system";
 import * as DocumentPicker from "expo-document-picker";
 import {dateFormat} from "../constants/Date";
 import moment from "moment";
-import * as MediaLibrary from "expo-media-library";
 
 import { app } from "../firebase"
 import { getAuth } from "firebase/auth";
 import {StudentConverter} from "../models/Student";
-import {getAlbumAsync} from "expo-media-library";
 import * as WebBrowser from 'expo-web-browser';
 
 
@@ -102,7 +100,7 @@ export const getUploadedFilesOfStudent = async (course: Course, teacher: Teacher
 export const getUploadedFilesOfHomework = async (course: Course, teacher: Teacher, homework: Homework) => {
 	const storage = getStorage();
 
-	const files: { student: string, filePath: string}[] = [];
+	const files: UploadedFileByStudent[] = [];
 
 	const url = getFirebaseStorageUrlFromObjects(course, teacher, homework, "Teacher");
 	const gsRef = ref(storage, url);
@@ -131,6 +129,7 @@ export const getUploadedFilesOfHomework = async (course: Course, teacher: Teache
 			filePath
 		})
 	}))
+
 	return files;
 }
 
@@ -171,7 +170,7 @@ export const openDownloadedFile = async (file: string, url: string) => {
 	getDownloadURL(ref(getStorage(), url))
 		.then((downloadURL) => {
 				WebBrowser.openBrowserAsync(downloadURL)
-					.then((r) => {
+					.then((_) => {
 					})
 		})
 }
@@ -266,7 +265,7 @@ export const getAllCoursesAndHomeworksOfTeacher = async (callback: Function) => 
 	const auth = getAuth(app);
 	const user = auth?.currentUser;
 
-	const data: CourseData[] = [];
+	const data: TeacherCourseData[] = [];
 
 	const db = getFirestore();
 
@@ -284,14 +283,15 @@ export const getAllCoursesAndHomeworksOfTeacher = async (callback: Function) => 
 
 			const homeworks = await getHomeworksByCourseID(homeworkColl, course.id);
 
-			const homeworksAndFiles: any = [];
+			const homeworksAndFiles: HomeworkAndUploadedFiles[] = [];
 
 			await Promise.all(homeworks.map(async (homework) => {
 				await getUploadedFilesOfHomework(course.data()!, _teacher.data(), homework)
 					.then((files) => {
-						homeworksAndFiles.push(
-							files
-						)
+						homeworksAndFiles.push({
+							files,
+							homeworkTitle: homework.title
+						})
 					})
 			}))
 
