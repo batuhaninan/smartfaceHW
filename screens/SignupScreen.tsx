@@ -1,6 +1,6 @@
 import {Dimensions, StyleSheet} from 'react-native';
 
-import {SyntheticEvent, useEffect, useState} from 'react';
+import {SyntheticEvent, useState} from 'react';
 
 
 import { View } from '../components/Themed';
@@ -29,11 +29,8 @@ const roleList = [
 ];
 
 
-interface SignupScreenProps {
-	navigation: any
-}
-
-export default function SignupScreen<SignupScreenProps> ({ navigation }) {
+// @ts-ignore
+export default function SignupScreen ({ navigation }) {
 
 	const [emailText, setEmailText] = useState("");
 	const [nameText, setNameText] = useState("");
@@ -46,10 +43,9 @@ export default function SignupScreen<SignupScreenProps> ({ navigation }) {
 	const [signupSuccessful, setSignupSuccessful] = useState(false);
 
 	const [snackbarVisible, setSnackbarVisible] = useState(false);
-	const onToggleSnackbar = () => setSnackbarVisible(!snackbarVisible);
 	const onDismissSnackbar = () => setSnackbarVisible(false);
 
-	const signupWrapper = (e: SyntheticEvent) => {
+	const signupWrapper = (_: SyntheticEvent) => {
 		if (passwordText !== passwordAgainText) {
 			setSignupSuccessful(false);
 			setSnackbarVisible(true)
@@ -58,7 +54,7 @@ export default function SignupScreen<SignupScreenProps> ({ navigation }) {
 
 		const auth = getAuth();
 		createUserWithEmailAndPassword(auth, emailText, passwordText)
-			.then(async (result) => {
+			.then(async (_) => {
 
 				await addUser(nameText, emailText, role);
 
@@ -67,7 +63,7 @@ export default function SignupScreen<SignupScreenProps> ({ navigation }) {
 			})
 	}
 
-	const signinWrapper = (e: SyntheticEvent) => {
+	const signinWrapper = (_: SyntheticEvent) => {
 		navigation.navigate("Root")
 	}
 

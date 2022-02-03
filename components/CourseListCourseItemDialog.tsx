@@ -1,10 +1,6 @@
 import {StyleSheet} from 'react-native';
-
 import React, {useEffect, useState} from 'react';
-
 import {Button, Dialog, List, Paragraph, Text, Portal, Surface} from 'react-native-paper';
-
-import * as DocumentPicker from 'expo-document-picker';
 import {Homework} from "../models/Homework";
 import {Course} from "../models/Course";
 import {Teacher} from "../models/Teacher";
@@ -15,6 +11,7 @@ import {
   selectFile,
   uploadFile
 } from "../utils/FirebaseStorageUtils";
+
 import moment from "moment";
 import {dateFormat} from "../constants/Date";
 import {convertStatusToEnum} from "../utils/HomeworkStatusUtils";

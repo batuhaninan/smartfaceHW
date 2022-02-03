@@ -1,5 +1,3 @@
-import { StyleSheet } from 'react-native';
-
 import { List, Surface } from 'react-native-paper';
 import React, { useState } from 'react';
 
@@ -30,7 +28,6 @@ const CourseListCourseItem: React.FC<CourseListCourseItemProps> = ({ course, tea
         if (homeworks !== undefined) {
             setSelectedHomework(homeworks[index]);
             setShouldOpenDialog(true);
-						console.log(homeworks)
         }
 	}
 

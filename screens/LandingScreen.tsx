@@ -7,7 +7,6 @@ import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import SignupScreen from "./SignupScreen";
 import {app} from "../firebase";
 import DropDown from "react-native-paper-dropdown";
-import {LinearGradient} from "expo-linear-gradient";
 import {validateUserTypeByEmail} from "../utils/FirebaseStorageUtils";
 
 
@@ -47,14 +46,15 @@ export default function LandingScreen({ navigation }) {
 		// 	.then(() => {
 		// 		navigation.navigate("StudentScreen");
 		// 	})
-		signInWithEmailAndPassword(getAuth(app), "teacher_2@gmail.com", "123456")
-			.then(() => {
-				navigation.navigate("TeacherScreen");
-			})
+		// signInWithEmailAndPassword(getAuth(app), "teacher_2@gmail.com", "123456")
+		// 	.then(() => {
+		// 		navigation.navigate("TeacherScreen");
+		// 	})
 		// signInWithEmailAndPassword(getAuth(app), "principal@gmail.com", "123456")
 		// 	.then(() => {
 		// 		navigation.navigate("PrincipalScreen");
 		// 	})
+		// return;
 		const isCorrectUserType = await validateUserTypeByEmail(emailText, role);
 		if (!isCorrectUserType) {
 			setFailedLoginText(`You are not a ${role}!`);
@@ -67,12 +67,14 @@ export default function LandingScreen({ navigation }) {
 				setLoginSuccessful(true);
 				navigation.navigate(`${role}Screen`);
 			})
-			.catch((e) => {
+			.catch((_) => {
 				setFailedLoginText("Please check your information!");
 				setLoginSuccessful(false);
 				setSnackbarVisible(true);
 			});
 	}
+
+	// loginWrapper();
 
 	const signupWrapper = (_: SyntheticEvent) => {
 		navigation.navigate("SignupScreen")
