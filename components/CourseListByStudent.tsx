@@ -1,12 +1,12 @@
-import {Checkbox, List, Surface} from 'react-native-paper';
+import {List, Surface} from 'react-native-paper';
 import React from "react";
 import CourseListByStudentItem from "./CourseListByStudentItem";
+import {TeacherCourseData} from "../types";
 
 
 interface CourseListByStudentProps {
-	course: any,
+	course: TeacherCourseData,
 }
-
 
 const CourseList: React.FC<CourseListByStudentProps> = ({ course }): JSX.Element => {
 
@@ -15,11 +15,7 @@ const CourseList: React.FC<CourseListByStudentProps> = ({ course }): JSX.Element
 				{course.homeworksAndFiles.map((homework) => {
 					return (
 						<Surface>
-							{homework.map((file) => {
-								return (
-									<CourseListByStudentItem key={file.filePath} file={file} course={course} homework={homework} teacher={course.teacher} />
-								)
-							})}
+							<CourseListByStudentItem key={homework.homeworkTitle} homeworkAndFiles={homework} />
 						</Surface>
 					)
 				})}
@@ -28,19 +24,3 @@ const CourseList: React.FC<CourseListByStudentProps> = ({ course }): JSX.Element
 }
 
 export default CourseList;
-
-/*
-
-<Surface>
-							 {homework.map((file) => {
-							 	return (
-							 		<Surface>
-							 			{shouldOpenDialog &&
-                         <StudentUploadedFileDialog file={file} closeDialog={setShouldOpenDialog} course={course.course} />}
-
-							 			<List.Item key={file.student} onPress={() => setShouldOpenDialog(true)} title={file.student}/>
-							 		</Surface>
-							 	)
-							})}
-						</Surface>
- */
