@@ -1,20 +1,20 @@
 import { useState, useEffect } from 'react';
-import {Dimensions, StyleSheet} from 'react-native';
 
 import { View } from '../components/Themed';
-import { RootTabScreenProps, CourseData } from '../types';
+import { CourseData } from '../types';
 
 import CourseList from "../components/CourseList";
-import { getData } from "../utils/FirebaseStorageUtils";
-import Constants from "expo-constants";
+import {getAllCoursesAndHomeworksOfStudent} from "../utils/FirebaseStorageUtils";
+
+import {styles} from "../Styles";
 
 
-export default function StudentScreen({ navigation }: RootTabScreenProps<'StudentScreen'>) {
+const StudentScreen = () => {
 
 	const [courses, setCourses] = useState<CourseData[]>([]);
 
 	useEffect(() => {
-		getData().then(r => { setCourses(r) })
+		getAllCoursesAndHomeworksOfStudent().then(r => { setCourses(r) })
 	}, [])
 
 	return (
@@ -28,14 +28,4 @@ export default function StudentScreen({ navigation }: RootTabScreenProps<'Studen
 	);
 }
 
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		marginTop: Constants.statusBarHeight,
-		width: "80%",
-		marginLeft: Dimensions.get("window").width / 10,
-		marginBottom: Dimensions.get("window").width / 10,
-		borderRadius: 90,
-		backgroundColor: "transparent",
-	},
-});
+export default StudentScreen;
