@@ -1,24 +1,31 @@
 import {Dimensions, StyleSheet} from 'react-native';
-
 import {SyntheticEvent, useEffect, useState} from 'react';
-
-
-import { Text, View } from '../components/Themed';
-
+import { View } from '../components/Themed';
 import {Button, Snackbar, TextInput} from 'react-native-paper';
 import Constants from "expo-constants";
-
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import SignupScreen from "./SignupScreen";
-import {determineUserScreenByType} from "../utils/FirebaseStorageUtils";
 import {app} from "../firebase";
+import DropDown from "react-native-paper-dropdown";
+import {LinearGradient} from "expo-linear-gradient";
 
 
+const roleList = [
+	{
+		label: "Principal",
+		value: "Principal",
+	},
+	{
+		label: "Teacher",
+		value: "Teacher",
+	},
+	{
+		label: "Student",
+		value: "Student",
+	},
+];
 
-interface LandingScreenProps {
-	navigation: any
-}
-
+// @ts-ignore
 export default function LandingScreen({ navigation }) {
 
 	const [emailText, setEmailText] = useState("");
@@ -28,17 +35,30 @@ export default function LandingScreen({ navigation }) {
 	const [loginSuccessful, setLoginSuccessful] = useState(false);
 
 	const [snackbarVisible, setSnackbarVisible] = useState(false);
-	const onToggleSnackbar = () => setSnackbarVisible(!snackbarVisible);
 	const onDismissSnackbar = () => setSnackbarVisible(false);
 
-	const loginWrapper = (e: SyntheticEvent) => {
+	const [showDropDown, setShowDropDown] = useState(false);
+	const [role, setRole] = useState("");
+
+	const loginWrapper = (_: SyntheticEvent) => {
+		// signInWithEmailAndPassword(getAuth(app), "student_2@gmail.com", "123456")
+		// 	.then(() => {
+		// 		navigation.navigate("StudentScreen");
+		// 	})
+		// signInWithEmailAndPassword(getAuth(app), "teacher_2@gmail.com", "123456")
+		// 	.then(() => {
+		// 		navigation.navigate("TeacherScreen");
+		// 	})
+		// signInWithEmailAndPassword(getAuth(app), "principal@gmail.com", "123456")
+		// 	.then(() => {
+		// 		navigation.navigate("PrincipalScreen");
+		// 	})
+		// return;
 		const auth = getAuth(app);
 		signInWithEmailAndPassword(auth, emailText, passwordText)
-			.then(async (r) => {
+			.then(async (_) => {
 				setLoginSuccessful(true);
-
-				const screen = await determineUserScreenByType();
-				navigation.navigate(screen);
+				navigation.navigate(`${role}Screen`);
 				setSnackbarVisible(true);
 			})
 			.catch((e) => {
@@ -48,7 +68,7 @@ export default function LandingScreen({ navigation }) {
 			});
 	}
 
-	const signupWrapper = (e: SyntheticEvent) => {
+	const signupWrapper = (_: SyntheticEvent) => {
 		navigation.navigate("SignupScreen")
 	}
 
@@ -91,6 +111,18 @@ export default function LandingScreen({ navigation }) {
 
 			}
 
+			<DropDown
+				label={"Role"}
+				mode={"outlined"}
+				visible={showDropDown}
+				showDropDown={() => setShowDropDown(true)}
+				onDismiss={() => setShowDropDown(false)}
+				value={role}
+				setValue={setRole}
+				list={roleList}
+
+			/>
+
 			<Button style={styles.loginButton} mode="contained" onPress={loginWrapper}>
 				Log in
 			</Button>
@@ -129,10 +161,10 @@ const styles = StyleSheet.create({
 		marginTop: 30,
 	},
 	passwordField: {
-		marginTop: 60,
+		marginVertical: 30,
 	},
 	loginButton: {
-		marginTop: Dimensions.get("screen").height - 450,
+		marginTop: Dimensions.get("screen").height - 550,
 	},
 	signupButton: {
 		marginTop: 20,
