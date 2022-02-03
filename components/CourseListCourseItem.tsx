@@ -30,8 +30,10 @@ const CourseListCourseItem: React.FC<CourseListCourseItemProps> = ({ course, tea
         if (homeworks !== undefined) {
             setSelectedHomework(homeworks[index]);
             setShouldOpenDialog(true);
+						console.log(homeworks)
         }
 	}
+
 
   return (
       <Surface>
@@ -47,7 +49,7 @@ const CourseListCourseItem: React.FC<CourseListCourseItemProps> = ({ course, tea
 
               {homeworks.map((homework: Homework, index: number) => {
 								return (
-                      <List.Item style={{ backgroundColor: statusToColor(convertStatusToEnum(homework.status)!) }} right={_props => <List.Icon {..._props} icon={ statusToIcon(convertStatusToEnum(homework.status)!) } />} descriptionNumberOfLines={2} key={homework.title + homework.status + homework.course} title={homework.title} onPress={() => {extendRowInfo(index)}} />
+                      <List.Item key={homework.title} style={{ backgroundColor: statusToColor(convertStatusToEnum(homework.status)!) }} right={_props => <List.Icon {..._props} icon={ statusToIcon(convertStatusToEnum(homework.status)!) } />} descriptionNumberOfLines={2} title={homework.title} onPress={() => {extendRowInfo(index)}} />
                   )
               })}
           </List.Accordion>

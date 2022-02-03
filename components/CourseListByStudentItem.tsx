@@ -13,13 +13,13 @@ interface CourseListByStudentItem {
 const CourseListByStudentItem: CourseListByStudentItem = ({ file, course, homework ,teacher }) => {
 
 	const [shouldOpenDialog, setShouldOpenDialog] = useState(false);
-
+	console.log(homework)
 	return (
 		<Surface>
 			{shouldOpenDialog &&
           <StudentUploadedFileDialog file={file} closeDialog={setShouldOpenDialog} homework={homework} teacher={teacher} course={course.course} />}
 
-			<List.Item key={file.student} onPress={() => setShouldOpenDialog(true)} title={file.student} />
+			<List.Item key={file.filePath} onPress={() => setShouldOpenDialog(true)} title={file.student} />
 		</Surface>
 	)
 }

@@ -8,10 +8,14 @@ import * as FileSystem from "expo-file-system";
 import * as DocumentPicker from "expo-document-picker";
 import {dateFormat} from "../constants/Date";
 import moment from "moment";
+import * as MediaLibrary from "expo-media-library";
 
 import { app } from "../firebase"
 import { getAuth } from "firebase/auth";
 import {StudentConverter} from "../models/Student";
+import {getAlbumAsync} from "expo-media-library";
+import * as WebBrowser from 'expo-web-browser';
+
 
 
 export const addUser = async (name: string, email: string, userType: string) => {
@@ -163,16 +167,12 @@ export const uploadFile = async (file: any, url: string) => {
 	}
 }
 
-export const downloadFile = async (file: string, url: string) => {
-	const storage = getStorage();
-
-	getDownloadURL(ref(storage, url))
+export const openDownloadedFile = async (file: string, url: string) => {
+	getDownloadURL(ref(getStorage(), url))
 		.then((downloadURL) => {
-			FileSystem.downloadAsync(downloadURL, FileSystem.documentDirectory + file)
-				.then((_) => {
-				})
-				.catch((_) => {
-				})
+				WebBrowser.openBrowserAsync(downloadURL)
+					.then((r) => {
+					})
 		})
 }
 
@@ -313,8 +313,6 @@ export const validateUserTypeByEmail = async (email: string, type: string) => {
 	const userCollection = collection(db, type);
 
 	const user = await getDocs(query(userCollection, where("email", "==", email)));
-
-	console.log(user.empty)
 
 	return !user.empty;
 }

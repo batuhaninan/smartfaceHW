@@ -1,12 +1,12 @@
 import {StyleSheet} from 'react-native';
 
-import React from 'react';
+import React, {useState} from 'react';
 
-import {Button, Dialog, Text, Portal, Surface, Checkbox,} from 'react-native-paper';
+import {Button, Dialog, Text, Portal, Surface, Checkbox, ActivityIndicator,} from 'react-native-paper';
 
 import {Course} from "../models/Course";
 
-import {downloadFile} from "../utils/FirebaseStorageUtils";
+import {downloadFile, openDownloadedFile} from "../utils/FirebaseStorageUtils";
 import {Homework} from "../models/Homework";
 import {Teacher} from "../models/Teacher";
 
@@ -24,9 +24,11 @@ const StudentUploadedFileDialog: React.FC<StudentUploadedFileDialogProps> = ({ f
 
 	const hideDialog = () => closeDialog(false);
 
-	const downloadFileWrapper = async () => {
+	const openDownloadedFileWrapper = () => {
 		const filePath = file.filePath;
-		downloadFile(file.filePath.split("/")[6], filePath);
+		openDownloadedFile(file.filePath.split("/")[6], filePath)
+			.then((_) => {
+			});
 	}
 
 	return (
@@ -40,7 +42,7 @@ const StudentUploadedFileDialog: React.FC<StudentUploadedFileDialogProps> = ({ f
 					</Dialog.Content>
 
 					<Dialog.Actions>
-						<Button onPress={downloadFileWrapper} style={ {paddingTop: 30, paddingBottom: 10, paddingLeft: 20} }>Download homework</Button>
+						<Button onPress={openDownloadedFileWrapper} style={ {paddingTop: 30, paddingBottom: 10, paddingLeft: 20} }>Download homework</Button>
 					</Dialog.Actions>
 				</Dialog>
 			</Portal>

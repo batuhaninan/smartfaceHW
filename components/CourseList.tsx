@@ -19,7 +19,7 @@ const CourseList: React.FC<CourseListProps> = ({ courses }): JSX.Element => {
 		<List.Section title="Courses" >
 			{courses.map((courseCollection: CourseData, index: number) => {
 				return (
-					<CourseListCourseItem key={courseCollection.course.name} course={courseCollection.course} teacher={courseCollection.teacher} homeworks={courseCollection.homeworks}/>
+					<CourseListCourseItem key={courseCollection.courseSnapshot.id} course={courseCollection.course} teacher={courseCollection.teacher} homeworks={courseCollection.homeworks}/>
 				)
 			})}
 		</List.Section>
