@@ -1,23 +1,15 @@
-import { Feather } from '@expo/vector-icons';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { ColorSchemeName } from 'react-native';
 
-import Constants from "expo-constants";
-
 import { Provider as PaperProvider } from "react-native-paper";
 
-import Colors from '../constants/Colors';
-import useColorScheme from '../hooks/useColorScheme';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import StudentScreen from '../screens/StudentScreen';
 import TeacherScreen from '../screens/TeacherScreen';
 import PrincipalScreen from '../screens/PrincipalScreen';
-import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
-import { Provider } from 'react-native-paper/lib/typescript/core/settings';
 import LandingScreen from "../screens/LandingScreen";
 import SignupScreen from "../screens/SignupScreen";
 
