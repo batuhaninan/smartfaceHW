@@ -4,12 +4,13 @@ import {ActivityIndicator, List} from 'react-native-paper';
 import {styles} from "../Styles";
 import {getAllCoursesAndHomeworksOfTeacher} from "../utils/FirebaseStorageUtils";
 import CourseListByStudent from "../components/CourseListByStudent";
+import {TeacherCourseData} from "../types";
 
 
 
 export default function TeacherScreen() {
 
-  const [courses, setCourses] = useState<any>([]);
+  const [courses, setCourses] = useState<TeacherCourseData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -23,7 +24,7 @@ export default function TeacherScreen() {
   return (
     <View style={styles.container}>
         <List.Section title={"Courses"}>
-          {courses.map((course: any) => {
+          {courses.map((course) => {
             return <CourseListByStudent key={course.course.name} course={course}/>
           })}
         </List.Section>
