@@ -1,3 +1,6 @@
+import {SnapshotOptions} from "firebase/firestore";
+import {QueryDocumentSnapshot} from "firebase/firestore";
+
 export class Student {
     
     name: string
@@ -23,7 +26,7 @@ export const StudentConverter = {
             courses: student.courses
             };
     },
-    fromFirestore: (snapshot: any, options: any) => {
+    fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions) => {
         const data = snapshot.data(options);
         return new Student(data.name, data.email, data.courses);
     }

@@ -1,3 +1,6 @@
+import {SnapshotOptions} from "firebase/firestore";
+import {QueryDocumentSnapshot} from "firebase/firestore";
+
 export class Principal {
 
 	name: string
@@ -20,7 +23,7 @@ export const PrincipalConverter = {
 			email: principal.email,
 		};
 	},
-	fromFirestore: (snapshot: any, options: any) => {
+	fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions) => {
 		const data = snapshot.data(options);
 		return new Principal(data.name, data.email);
 	}
