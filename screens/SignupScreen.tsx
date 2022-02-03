@@ -36,6 +36,7 @@ interface SignupScreenProps {
 export default function SignupScreen<SignupScreenProps> ({ navigation }) {
 
 	const [emailText, setEmailText] = useState("");
+	const [nameText, setNameText] = useState("");
 	const [passwordText, setPasswordText] = useState("");
 	const [passwordAgainText, setPasswordAgainText] = useState("");
 
@@ -59,7 +60,7 @@ export default function SignupScreen<SignupScreenProps> ({ navigation }) {
 		createUserWithEmailAndPassword(auth, emailText, passwordText)
 			.then(async (result) => {
 
-				await addUser(role);
+				await addUser(nameText, emailText, role);
 
 				setSignupSuccessful(true);
 				setSnackbarVisible(true)
@@ -72,6 +73,15 @@ export default function SignupScreen<SignupScreenProps> ({ navigation }) {
 
 	return (
 		<View style={styles.container}>
+				<TextInput
+					label="Name"
+					mode="outlined"
+					keyboardType="email-address"
+					style={styles.emailField}
+					value={nameText}
+					onChangeText={text => {setNameText(text)}}
+				/>
+
 				<TextInput
 					label="Email"
 					mode="outlined"
@@ -155,7 +165,7 @@ const styles = StyleSheet.create({
 		marginBottom: 30,
 	},
 	signupButton: {
-		marginTop: Dimensions.get("screen").height - 600,
+		marginTop: Dimensions.get("screen").height - 700,
 	},
 	signinButton: {
 		marginTop: 20,
