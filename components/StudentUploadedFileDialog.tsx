@@ -1,26 +1,16 @@
-import {StyleSheet} from 'react-native';
-
-import React, {useState} from 'react';
-
-import {Button, Dialog, Text, Portal, Surface, Checkbox, ActivityIndicator,} from 'react-native-paper';
-
-import {Course} from "../models/Course";
-
-import {downloadFile, openDownloadedFile} from "../utils/FirebaseStorageUtils";
-import {Homework} from "../models/Homework";
-import {Teacher} from "../models/Teacher";
+import React from 'react';
+import {Button, Dialog, Text, Portal, Surface} from 'react-native-paper';
+import {openDownloadedFile} from "../utils/FirebaseStorageUtils";
+import {UploadedFileByStudent} from "../types";
 
 
 interface StudentUploadedFileDialogProps {
-	file: any,
+	file: UploadedFileByStudent,
 	closeDialog: React.Dispatch<React.SetStateAction<boolean>>,
-	course: Course,
-	homework: Homework,
-	teacher: Teacher,
 }
 
 
-const StudentUploadedFileDialog: React.FC<StudentUploadedFileDialogProps> = ({ file, course, homework ,teacher, closeDialog }): JSX.Element => {
+const StudentUploadedFileDialog: React.FC<StudentUploadedFileDialogProps> = ({ file, closeDialog }): JSX.Element => {
 
 	const hideDialog = () => closeDialog(false);
 
@@ -49,19 +39,5 @@ const StudentUploadedFileDialog: React.FC<StudentUploadedFileDialogProps> = ({ f
 		</Surface>
 	);
 }
-
-const styles = StyleSheet.create({
-	containerStyle: {
-		backgroundColor: 'white',
-		paddingTop: 40,
-		paddingHorizontal: 0,
-		marginHorizontal: 0,
-	},
-	selectParagraph: {
-		marginBottom: 40
-	},
-});
-
-
 
 export default StudentUploadedFileDialog;
