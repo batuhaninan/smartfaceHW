@@ -14,8 +14,6 @@ interface CourseListProps {
 
 const CourseList: React.FC<CourseListProps> = ({ courses }): JSX.Element => {
 	
-	
-	console.log("Re-render at ", new Date())
 
 	return (
 		<List.Section title="Courses" >

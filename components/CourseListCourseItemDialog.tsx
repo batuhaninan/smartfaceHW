@@ -2,7 +2,7 @@ import {StyleSheet} from 'react-native';
 
 import React, {useEffect, useState} from 'react';
 
-import {Button, Dialog, List, Paragraph, Portal, Surface} from 'react-native-paper';
+import {Button, Dialog, List, Paragraph, Text, Portal, Surface} from 'react-native-paper';
 
 import * as DocumentPicker from 'expo-document-picker';
 import {Homework} from "../models/Homework";
@@ -11,7 +11,7 @@ import {Teacher} from "../models/Teacher";
 
 import {
   getFirebaseStorageUrlFromObjects,
-  getUploadedFiles,
+  getUploadedFilesOfStudent,
   selectFile,
   uploadFile
 } from "../utils/FirebaseStorageUtils";
@@ -19,6 +19,7 @@ import moment from "moment";
 import {dateFormat} from "../constants/Date";
 import {convertStatusToEnum} from "../utils/HomeworkStatusUtils";
 import {StatusEnum} from "../constants/StatusToColor";
+import {DocumentResultFixed} from "../types";
 
 
 interface CourseListCourseItemDialogProps {
@@ -33,7 +34,7 @@ const CourseListCourseItemDialog: React.FC<CourseListCourseItemDialogProps> = ({
 	
     const [currentAttempts, setCurrentAttempts] = useState(0);
     const [uploadedFiles, setUploadedFiles] = useState<{ name: string, date: string }[]>([]);
-    const [selectedFile, setSelectedFile] = useState<DocumentPicker.DocumentResult>();
+    const [selectedFile, setSelectedFile] = useState<DocumentResultFixed>();
 
     const hideDialog = () => closeDialog(false);
 
@@ -44,13 +45,13 @@ const CourseListCourseItemDialog: React.FC<CourseListCourseItemDialogProps> = ({
     }
 
     const uploadFileWrapper = async () => {
-        let url = getFirebaseStorageUrlFromObjects(course, teacher, homework)
+        let url = getFirebaseStorageUrlFromObjects(course, teacher, homework, "Student")
         url = `${url}/${moment().format(dateFormat)}/${selectedFile?.name}`;
         console.log("upload file wrapper ", url)
         uploadFile(selectedFile, url)
-          .then((r) => {
+          .then((_) => {
               setTimeout(() => {
-                  getUploadedFiles(course, teacher, homework)
+                getUploadedFilesOfStudent(course, teacher, homework)
                     .then((uploadFiles) => {
                         setUploadedFiles(uploadFiles);
                         setCurrentAttempts(uploadFiles.length)
@@ -68,7 +69,7 @@ const CourseListCourseItemDialog: React.FC<CourseListCourseItemDialogProps> = ({
     }, [homework, uploadedFiles])
 
     useEffect(() => {
-        getUploadedFiles(course, teacher, homework)
+        getUploadedFilesOfStudent(course, teacher, homework)
           .then((files) => {
               setUploadedFiles(files)
               setCurrentAttempts(files.length)
@@ -98,13 +99,13 @@ const CourseListCourseItemDialog: React.FC<CourseListCourseItemDialogProps> = ({
                                 <Paragraph>You've uploaded file(s): </Paragraph>
                                 {uploadedFiles.map((file) => {
                                     return (
-                                        <Paragraph key={file.date} >{moment(file.date, dateFormat).fromNow()} - {file.name}</Paragraph>
+                                        <Text key={file.date} >{file.name} - {moment(file.date, dateFormat).fromNow()}</Text>
                                     )
                                 })}
                             </Surface>
                         }
 
-                        <Paragraph style={styles.selectParagraph} />
+                      <Paragraph style={styles.selectParagraph}> </Paragraph>
 
                         {selectedFile &&
                             <List.Accordion
@@ -112,7 +113,7 @@ const CourseListCourseItemDialog: React.FC<CourseListCourseItemDialogProps> = ({
                                 expanded={true}
                                 left={props => <List.Icon {...props} icon="file" />}>
 
-                                <List.Item key={selectedFile?.uri} title={selectedFile?.name} />
+                                <List.Item key={selectedFile.uri} title={selectedFile?.name} />
                             </List.Accordion>
                         }
 
@@ -132,15 +133,12 @@ const styles = StyleSheet.create({
     containerStyle: {
         backgroundColor: 'white',
         paddingTop: 40,
-        paddingHorizontal: 20,
-        marginHorizontal: 20,
+        paddingHorizontal: 0,
+        marginHorizontal: 0,
     },
     selectParagraph: {
         marginBottom: 40
     },
-    warningParagraph: {
-        padding: 20,
-    }
 });
 
 
