@@ -1,17 +1,18 @@
+import {SnapshotOptions} from "firebase/firestore";
+import {QueryDocumentSnapshot} from "firebase/firestore";
+
 export class Homework {
     
     title: string
     course: string
     isUploaded: boolean
-    email: string
     status: string
     totalAttempts: number
 
-    constructor (title: string, course: string, isUploaded: boolean, email: string, status: string, totalAttempts: number) {
+    constructor (title: string, course: string, isUploaded: boolean, status: string, totalAttempts: number) {
         this.title = title;
         this.course = course;
         this.isUploaded = isUploaded;
-        this.email = email;
         this.status = status;
         this.totalAttempts = totalAttempts;
     }
@@ -27,13 +28,12 @@ export const HomeworkConverter = {
             title: homework.title,
             course: homework.course,
             isUploaded: homework.isUploaded,
-            email: homework.email,
             status: homework.status,
             totalAttempts: homework.totalAttempts,
             };
     },
-    fromFirestore: (snapshot: any, options: any) => {
+    fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions) => {
         const data = snapshot.data(options);
-        return new Homework(data.title, data.course, data.isUploaded, data.email, data.status, data.totalAttempts);
+        return new Homework(data.title, data.course, data.isUploaded, data.status, data.totalAttempts);
     }
 };
