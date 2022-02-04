@@ -1,6 +1,6 @@
 import {StyleSheet} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {Button, Dialog, List, Paragraph, Text, Portal, Surface} from 'react-native-paper';
+import {Button, Dialog, List, Paragraph, Text, Portal, Surface, ActivityIndicator} from 'react-native-paper';
 import {Homework} from "../models/Homework";
 import {Course} from "../models/Course";
 import {Teacher} from "../models/Teacher";
@@ -32,6 +32,7 @@ const CourseListCourseItemDialog: React.FC<CourseListCourseItemDialogProps> = ({
     const [currentAttempts, setCurrentAttempts] = useState(0);
     const [uploadedFiles, setUploadedFiles] = useState<{ name: string, date: string }[]>([]);
     const [selectedFile, setSelectedFile] = useState<DocumentResultFixed>();
+    const [isLoading, setIsLoading] = useState(true);
 
     const hideDialog = () => closeDialog(false);
 
@@ -66,10 +67,12 @@ const CourseListCourseItemDialog: React.FC<CourseListCourseItemDialogProps> = ({
     }, [homework, uploadedFiles])
 
     useEffect(() => {
-        getUploadedFilesOfStudent(course, teacher, homework)
+      setIsLoading(true);
+      getUploadedFilesOfStudent(course, teacher, homework)
           .then((files) => {
               setUploadedFiles(files)
               setCurrentAttempts(files.length)
+              setIsLoading(false)
           })
     }, []);
 
@@ -113,6 +116,9 @@ const CourseListCourseItemDialog: React.FC<CourseListCourseItemDialogProps> = ({
                                 <List.Item key={selectedFile.uri} title={selectedFile?.name} />
                             </List.Accordion>
                         }
+
+                      {isLoading &&
+                        <ActivityIndicator animating={true} color="purple" size="large" />}
 
                     </Dialog.Content>
 
