@@ -24,6 +24,7 @@
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
+    <li><a href="#default-api-keys">API Keys</a></li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#contact">Contact</a></li>
   </ol>
@@ -49,8 +50,8 @@
 ### Prerequisites
 <div id="prerequisites"></div>
 
-* [expo-cli](https://docs.expo.dev/get-started/installation/)
-* npm
+* You need [expo-cli](https://docs.expo.dev/get-started/installation/) to run & build this app
+* npm 
 
 ### Installation
 <div id="installation"></div>
@@ -65,15 +66,35 @@ git clone git@github.com:batuhaninan/smartfaceHW.git
 cd smartfaceHW
 ```
 
-3. Install npm packages
+3. Copy firebaseConfig.dev.ts file to firebaseConfig.ts and replace empty strings with corresponding <a href="#default-api-keys">Default API keys</a>
+```bash
+cp firebaseConfig.dev.ts firebaseConfig.ts 
+```
+
+4. Install npm packages
 ```bash
 npm install
 ```
 
-4. Run
+5. Run
 ```bash
 npm start
 ```
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## API Keys
+<div id="default-api-keys"></div>
+
+| Key               |                 Password                  |
+|:------------------|:-----------------------------------------:|
+| apiKey            |  AIzaSyAHePXS6jz6HZfaGob9faTjHmRG1F6dcb4  |
+| authDomain        |   smartfacehomeworkapp.firebaseapp.com    | 
+| projectId         |           smartfacehomeworkapp            |
+| storageBucket     |     smartfacehomeworkapp.appspot.com      |
+| messagingSenderId |               240827683200                |
+| appId             | 1:240827683200:web:16a38b38eff44cd069f165 |
+| measurementId     |               G-81JJYDKMGE                |
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
