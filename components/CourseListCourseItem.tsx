@@ -33,16 +33,17 @@ const CourseListCourseItem: React.FC<CourseListCourseItemProps> = ({ course, tea
 
 
   return (
-      <Surface>
+      <Surface key={course.name}>
           {shouldOpenDialog &&
-              <CourseListCourseItemDialog homework={selectedHomework!} closeDialog={setShouldOpenDialog} course={course} teacher={teacher} />}
+              <CourseListCourseItemDialog key={selectedHomework?.title} homework={selectedHomework!} closeDialog={setShouldOpenDialog} course={course} teacher={teacher} />}
 
           <List.Accordion
               title={course.name}
               description={"Teacher: " + teacher.name}
               left={_props => <List.Icon {..._props} icon="folder" />}
               expanded={expanded}
-              onPress={handlePress}>
+              onPress={handlePress}
+              key={course.name + teacher.name + selectedHomework}>
 
               {homeworks.map((homework: Homework, index: number) => {
 								return (
