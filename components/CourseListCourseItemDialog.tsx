@@ -84,7 +84,7 @@ const CourseListCourseItemDialog: React.FC<CourseListCourseItemDialogProps> = ({
   }
 
   return (
-        <Surface>
+        <Surface key={homework.title + course.name + teacher.name}>
             <Portal>
                 <Dialog visible={true} onDismiss={hideDialog}>
                     <Dialog.Title>Upload File</Dialog.Title>
@@ -146,7 +146,6 @@ const styles = StyleSheet.create({
         marginBottom: 40
     },
 });
-
 
 
 export default CourseListCourseItemDialog;
