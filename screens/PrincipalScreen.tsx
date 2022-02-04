@@ -1,16 +1,18 @@
 import { View } from '../components/Themed';
-import {CourseData} from '../types';
-import CourseList from "../components/CourseList";
+import {TeacherCourseData} from '../types';
 import {useEffect, useState} from "react";
-import {getAllCoursesAndAllHomeworks, } from "../utils/FirebaseStorageUtils";
+import {getAllCoursesAndAllHomeworks} from "../utils/FirebaseStorageUtils";
 import {styles} from "../Styles";
-import {ActivityIndicator} from "react-native-paper";
+import {ActivityIndicator, BottomNavigation, List, Text} from "react-native-paper";
+import CourseListByStudent from "../components/CourseListByStudent";
+
+
 
 
 // @ts-ignore
 export default function PrincipalScreen({ navigation }) {
 
-  const [courses, setCourses] = useState<CourseData[]>([]);
+  const [courses, setCourses] = useState<TeacherCourseData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -22,11 +24,15 @@ export default function PrincipalScreen({ navigation }) {
   }, [])
 
 
+
+
   return (
     <View style={styles.container}>
-      <CourseList
-        courses={courses}
-      />
+      <List.Section title={"Courses"}>
+        {courses.map((course) => {
+          return <CourseListByStudent key={course.course.name} course={course}/>
+        })}
+      </List.Section>
       {isLoading &&
         <ActivityIndicator animating={true} color="purple" size="large" />}
     </View>
