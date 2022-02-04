@@ -11,7 +11,7 @@ interface CourseListByStudentProps {
 const CourseList: React.FC<CourseListByStudentProps> = ({ course }): JSX.Element => {
 
 	return (
-			<List.Accordion key={course.course.name} title={course.course.name}>
+			<List.Accordion key={course.course.name} title={course.course.name} description={"Teacher: "+ course.teacher.name}>
 				{course.homeworksAndFiles.map((homework) => {
 					return (
 						<Surface>
