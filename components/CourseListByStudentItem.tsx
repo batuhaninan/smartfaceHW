@@ -24,9 +24,9 @@ const CourseListByStudentItem: React.FC<CourseListByStudentItemProps> = ({ homew
           <StudentUploadedFileDialog file={selectedStudentFile!} closeDialog={setShouldOpenDialog} />}
 
 			<List.Accordion title={homeworkAndFiles.homeworkTitle} style={{ backgroundColor: "#eee6e6" }}>
-				{homeworkAndFiles.files.map((homework) => {
+				{homeworkAndFiles.files.map((homework, i) => {
 					return (
-							<List.Item key={homework.filePath} onPress={() => selectStudentFile(homework)} title={homework.student} />
+							<List.Item key={i} onPress={() => selectStudentFile(homework)} title={homework.student} />
 					)
 				})}
 			</List.Accordion>
