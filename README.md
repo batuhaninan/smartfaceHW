@@ -81,6 +81,11 @@ npm install
 npm start
 ```
 
+6. Build
+```bash
+expo build:android
+```
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## API Keys
