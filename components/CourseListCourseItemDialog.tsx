@@ -43,7 +43,8 @@ const CourseListCourseItemDialog: React.FC<CourseListCourseItemDialogProps> = ({
     }
 
     const uploadFileWrapper = async () => {
-        let url = getFirebaseStorageUrlFromObjects(course, teacher, homework, "Student")
+      setIsLoading(true);
+      let url = getFirebaseStorageUrlFromObjects(course, teacher, homework, "Student")
         url = `${url}/${moment().format(dateFormat)}/${selectedFile?.name}`;
         console.log("upload file wrapper ", url)
         uploadFile(selectedFile, url)
@@ -54,9 +55,11 @@ const CourseListCourseItemDialog: React.FC<CourseListCourseItemDialogProps> = ({
                         setUploadedFiles(uploadFiles);
                         setCurrentAttempts(uploadFiles.length)
                         setSelectedFile(undefined)
+                        setIsLoading(false);
                     })
               }, 1000)
           })
+      setIsLoading(false);
     }
 
     const isOutOfAttempts = () => {
