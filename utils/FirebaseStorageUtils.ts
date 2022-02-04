@@ -187,36 +187,44 @@ export const getFirebaseStorageUrlFromObjects = (course: Course, teacher: Teache
 }
 
 export const getAllCoursesAndAllHomeworks = async (callback: Function) => {
-	const data: CourseData[] = [];
+	const data: TeacherCourseData[] = [];
 
 	const db = getFirestore();
 
-	const courseColl = collection(db, "Course").withConverter(CourseConverter);
 	const teacherColl = collection(db, "Teacher").withConverter(TeacherConverter);
 	const homeworkColl = collection(db, "Homework").withConverter(HomeworkConverter);
 
-	const courses = await getDocs(query(courseColl));
+	const teacher = await getDocs(teacherColl);
 
-	await Promise.all(courses.docs.map(async (course) => {
-		if (course.exists()) {
-			let current_course = course.data();
+	await Promise.all(teacher.docs.map(async (_teacher) => {
+		const coursesOfTeacher = _teacher.get("courses");
 
-			let current_teacher = await getTeacherByCourseID(teacherColl, course.id);
-			let current_homeworks = await getHomeworksByCourseID(homeworkColl, course.id);
+		await Promise.all(coursesOfTeacher.map(async (courseID: string) => {
+			const _courseID = courseID.split("/")[2];
+			const course = await getDoc(doc(db, "Course", _courseID).withConverter(CourseConverter));
 
-			await Promise.all(current_homeworks.map(async (hw: Homework) => {
-				await getUploadedFilesOfStudent(current_course, current_teacher!, hw);
+			const homeworks = await getHomeworksByCourseID(homeworkColl, course.id);
+
+			const homeworksAndFiles: HomeworkAndUploadedFiles[] = [];
+
+			await Promise.all(homeworks.map(async (homework) => {
+				await getUploadedFilesOfHomework(course.data()!, _teacher.data(), homework)
+					.then((files) => {
+						homeworksAndFiles.push({
+							files,
+							homeworkTitle: homework.title
+						})
+					})
 			}))
 
 			data.push({
 				// @ts-ignore
-				"courseSnapshot": course,
-				"course": current_course,
+				"course": course.data(),
 				// @ts-ignore
-				"teacher": current_teacher,
-				"homeworks": current_homeworks,
+				"teacher": _teacher.data(),
+				"homeworksAndFiles": homeworksAndFiles,
 			});
-		}
+		}))
 	}))
 
 	callback(data);
