@@ -2,7 +2,13 @@ import {getStorage, listAll, list, ref, uploadBytes, getDownloadURL} from "fireb
 import {Course, CourseConverter} from "../models/Course";
 import {Teacher, TeacherConverter} from "../models/Teacher";
 import {Homework, HomeworkConverter} from "../models/Homework";
-import {CourseData, HomeworkAndUploadedFiles, TeacherCourseData, UploadedFileByStudent} from "../types";
+import {
+	AllTeachersAndStudents,
+	CourseData, CoursesAndStudents,
+	HomeworkAndUploadedFiles,
+	TeacherCourseData,
+	UploadedFileByStudent
+} from "../types";
 import {collection, CollectionReference, getDocs, doc, getDoc, getFirestore, query, where, addDoc} from "firebase/firestore";
 import * as FileSystem from "expo-file-system";
 import * as DocumentPicker from "expo-document-picker";
@@ -11,7 +17,7 @@ import moment from "moment";
 
 import { app } from "../firebase"
 import { getAuth } from "firebase/auth";
-import {StudentConverter} from "../models/Student";
+import {Student, StudentConverter} from "../models/Student";
 import * as WebBrowser from 'expo-web-browser';
 
 
@@ -226,6 +232,60 @@ export const getAllCoursesAndAllHomeworks = async (callback: Function) => {
 			});
 		}))
 	}))
+
+	callback(data);
+}
+
+export const getAllTeachersAndTheirStudents = async (callback: Function) => {
+	const db = getFirestore()
+	const teacherCollection = collection(db, "Teacher").withConverter(TeacherConverter);
+
+	const data: AllTeachersAndStudents[] = [];
+
+	await getDocs(teacherCollection)
+		.then(async (teacherDocResult) => {
+			return await Promise.all(teacherDocResult.docs.map(async (teacherData) => {
+				const teacherCourses = teacherData.data().courses;
+
+				const coursesAndStudents: CoursesAndStudents[] = [];
+
+				await Promise.all(teacherCourses.map(async (teacherCourse) => {
+					const studentCollection = collection(db, "Student").withConverter(StudentConverter);
+
+					const teacherCourseNameDoc = doc(db, "Course", teacherCourse.split("/")[2]).withConverter(CourseConverter);
+
+					let teacherCourseName = "";
+					await getDoc(teacherCourseNameDoc)
+						.then((_teacherCourseName) => {
+							teacherCourseName = _teacherCourseName.data()?.name!;
+							return coursesAndStudents.push({
+								"course": _teacherCourseName.data()?.name!,
+								"students": [],
+							})
+						})
+
+					await getDocs(studentCollection)
+						.then(async (studentDocResult) => {
+							return await Promise.all(studentDocResult.docs.map((studentData) => {
+								const studentCourses = studentData.data().courses;
+
+								studentCourses.map(async (studentCourse) => {
+									if (studentCourse === teacherCourse) {
+											coursesAndStudents.filter((course) => { return course.course === teacherCourseName })
+												.map((_course) => {
+													_course.students.push(studentData.data());
+												})
+									}
+								})
+							}))
+						})
+				}))
+				data.push({
+					teacher: teacherData.data(),
+					coursesAndStudents: coursesAndStudents
+				})
+			}))
+		})
 
 	callback(data);
 }
